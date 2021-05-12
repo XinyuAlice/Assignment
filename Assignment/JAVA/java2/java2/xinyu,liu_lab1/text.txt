@@ -1,0 +1,99 @@
+Ex1a:
+
+----jGRASP exec: java Ex1a
+Enter a number:
+6
+6is a perfect number
+ ----jGRASP: operation complete.
+
+ ----jGRASP exec: java Ex1a
+Enter a number:
+28
+28 is a perfect number
+ ----jGRASP: operation complete.
+
+ ----jGRASP exec: java Ex1a
+Enter a number:
+18
+18 is not a perfect number
+ ----jGRASP: operation complete.
+
+ Ex1b:
+ ----jGRASP exec: java Ex1b
+Enter a number:496
+496 is a perfect number
+ ----jGRASP: operation complete.
+
+ ----jGRASP exec: java Ex1b
+Enter a number:96
+96 is not a perfect number
+ ----jGRASP: operation complete.
+
+ ----jGRASP exec: java Ex1b
+Enter a number:76
+76 is not a perfect number
+ ----jGRASP: operation complete.
+
+Ex1c:
+
+ ----jGRASP exec: java Ex1c
+all perfect numbers from 1 to 10,000:
+6
+28
+496
+8128
+
+ ----jGRASP: operation complete.
+Ex1d:
+ ----jGRASP exec: java Ex1d
+all perfect numbers from 1 to 10,000:
+6
+28
+496
+8128
+time for executing the code segment in milliseconds:202
+ ----jGRASP: operation complete.
+
+Palindrome:
+
+ ----jGRASP exec: java Palindrome
+Enter a string:q,w,2332!2332,w,q
+q,w,2332!2332,w,q is a palindrome
+ ----jGRASP: operation complete.
+
+ ----jGRASP exec: java Palindrome
+Enter a string:hififi,h
+hififi,h is a palindrome
+ ----jGRASP: operation complete.
+
+ ----jGRASP exec: java Palindrome
+Enter a string:level,
+level, is a palindrome
+ ----jGRASP: operation complete.
+
+RectangleDemo:
+
+ ----jGRASP exec: java RectangleDemo
+Area of rect1 is 300
+Area of rect2 is 500
+
+ ----jGRASP: operation complete.
+SalesDemo:
+
+ ----jGRASP exec: java SalesDemo
+item:Shampoo
+Number sold: 10.0
+TotalAmount: $25.0
+totalDiscount: $2.5
+item:Toothpaste
+Number sold: 10.0
+TotalAmount: $19.9
+totalDiscount: $0.0
+
+ ----jGRASP: operation complete.
+
+
+
+
+
+
