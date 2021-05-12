@@ -1,0 +1,25 @@
+# version: '3.4'
+
+# services:
+#   as5:
+#     image: as5
+#     build: .
+#     environment:
+#       NODE_ENV: production
+#     ports:
+#       - 1337
+sails:build:
+  ports:
+    -"8001:80"
+    links:
+      -postgres
+      volumes:
+        - ./app:/app
+      environment:
+        -NODE_ENV=development
+      command: node app
+
+postgres: 
+  images: postgres:latest
+  ports:
+    -"8002:5432"

@@ -1,0 +1,3 @@
+$43000,Subaru,Forester
+$29000,Toyota,Corolla
+$38000,Mazda,5

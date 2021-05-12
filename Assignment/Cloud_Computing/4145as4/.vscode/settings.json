@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/c64b1beb-9715-4cd0-8115-5de6e1fbd1c6/resourceGroups/alice-firstapp-rg/providers/Microsoft.Web/sites/alice-firstapp",
+    "appService.deploySubpath": "."
+}

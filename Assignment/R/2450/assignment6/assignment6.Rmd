@@ -1,0 +1,190 @@
+---
+title: "STAT 2450 Assignment 6 (40 points)"
+author: "Alice Liu"
+date: 'Banner:  B00783546'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+1.  ISLR, chapter 8, problem 9.
+
++ YOU HAVE TO TREAT ALL QUESTIONS (a. to k.)
+
++ USE the ISLR BOOK : http://faculty.marshall.usc.edu/gareth-james/ISL/ISLR%20Seventh%20Printing.pdf
+
+
+a)
+
+```{r}
+set.seed(666)
+library(ISLR)
+index=sample(1:nrow(OJ),800,replace=F)
+OJtrain=OJ[index,]
+OJtest=OJ[-index,]
+
+PredictTrain = OJ$Purchase[index]
+PredictTest = OJ$Purchase[-index]
+```
+
+b)
+   
+```{r}
+library(tree)
+# OJtraintree=tree( enter your model specification here ,data=OJtrain)
+OJtraintree=tree(Purchase~., data=OJtrain)
+OJsummary=summary(OJtraintree)
+OJsummary
+```
+
+(4 points for fitting tree, reporting training error rate and number terminal nodes.
+ Seed wasn't specified prior to "sample" command, so different individuals are likely
+ to have different trees.)
+
+We can know that the tree has 8 terminal and the training error rate is 0.1538.
+
+(c) Type in the name of the tree object in order to get a detailed
+text output. Pick one of the terminal nodes, and interpret the
+information displayed.
+```{r}
+OJtraintree
+```
+For the terminal node:
+"24) ListPriceDiff < 0.235 52   60.58 MM ( 0.26923 0.73077 )*"
+This node contains 52 observations.
+The prediction for this node is MM.
+73.077% of the 52 observations are, in truth, MM.
+
+(3 points for sensible interpretation for the node chosen.)
+
+
+(d) Create a plot of the tree, and interpret the results.
+
+```{r}
+plot(OJtraintree)
+text(OJtraintree)
+```
+When (LoyalCH<0.483036 AND LoyalCH<0.276142), then the predicton is MM.
+When (LoyalCH<0.483036 AND LoyalCH>=0.276142 AND SalePriceMM<2.04), then the predicton is MM.
+When (LoyalCH<0.483036 AND LoyalCH>=0.276142 AND SalePriceMM>=2.04), then the predicton is CH.
+WHen (LoyalCH>=0.483036 AND LoyalCH<0.764572 AND PriceDiff<0.015 AND ListPriceDiff<0.235),then the predicton is MM.
+WHen (LoyalCH>=0.483036 AND LoyalCH<0.764572 AND PriceDiff<0.015 AND ListPriceDiff>=0.235),then the predicton is CH.
+WHen (LoyalCH>=0.483036 AND LoyalCH<0.764572 AND PriceDiff>=0.015 AND ListPriceDiff<0.255),then the predicton is CH.
+WHen (LoyalCH>=0.483036 AND LoyalCH<0.764572 AND PriceDiff>=0.015 AND ListPriceDiff>=0.255),then the predicton is CH.
+WHen (LoyalCH>=0.483036 AND LoyalCH>=0.764572),then the predicton is CH.
+
+(3 points for plot of tree with text.)
+
+(e) Predict the response on the test data, and produce a confusion
+matrix comparing the test labels to the predicted test labels.
+What is the test error rate?
+
+```{r}
+predictTest = predict(OJtraintree,newdata = OJtest, type = "class")
+conftable=table(predictTest, PredictTest)
+print(conftable)
+```
+
+```{r}
+testErrorRate = (sum(conftable)-sum(diag(conftable)))/sum(conftable)
+testErrorRate
+```
+The test error rate is 0.1703704.
+(4 points: 3 for the confusion matrix, 1 for reporting the correct test error rate)
+
+(f) Apply the cv.tree() function to the training set in order to
+determine the optimal tree size.
+
+```{r}
+#cv is cross validation
+cvtree = cv.tree(OJtraintree, FUN = prune.misclass)
+cvtree
+```
+(g) Produce a plot with tree size on the x-axis and cross-validated
+classification error rate on the y-axis.
+
+```{r}
+plot(cvtree$size, cvtree$dev,type = 'b', xlab = 'tree size', ylab = 'error rate')
+```
+(5 points for the plot)
+
+(h) Which tree size corresponds to the lowest cross-validated classification error rate?
+
+```{r}
+besttreesize = cvtree$size[cvtree$dev == min(cvtree$dev)]
+print("The best tree size is: ")
+besttreesize
+```
+The tree with 2 terminal nodes has lowest cross-validated classification error rate.
+(3 points for reporting the correct error rate)
+
+(i) Produce a pruned tree corresponding to the optimal tree size
+obtained using cross-validation. If cross-validation does not lead
+to selection of a pruned tree, then create a pruned tree with five
+terminal nodes.
+
+```{r}
+cvprunetree = prune.tree(OJtraintree, best = 5)
+plot(cvprunetree)
+text(cvprunetree)
+```
+The  tree has 5 terminal nodes.
+(3 points for the plot, with text)
+
+j) Compare training error rates between pruned and unpruned trees.  Which is higher? 
+```{r}
+predictunprune = predict(OJtraintree, newdata = data.frame(OJtrain), type = "class")
+predictprune = predict(cvprunetree, newdata = data.frame(OJtrain), type = "class")
+
+tableJ1 = table(PredictTrain,predictunprune)
+print("training error: confusion matrix for unpruned tree")
+print(tableJ1)
+unprunnetrainrate = (sum(tableJ1)-sum(diag(tableJ1)))/sum(tableJ1)
+unprunnetrainrate
+
+tableJ2 = table(PredictTrain,predictprune)
+print("training error: confusion matrix for pruned tree")
+print(tableJ2)
+prunnetrainrate = (sum(tableJ2)-sum(diag(tableJ2)))/sum(tableJ2)
+prunnetrainrate
+```
+0.1725 > 0.15375. So, the training error rate of pruned tree is higher than unpruned tree.
+(3 points) Conclusion may differ if a different initial seed was used.
+
+k) Compare test  error rates between pruned and unpruned trees.  Which is higher?
+```{r}
+predicunprunetest = predict(OJtraintree, newdata = data.frame(OJtest), type = "class")
+predictprunetest = predict(cvprunetree, newdata = data.frame(OJtest), type = "class")
+
+tableK1 = table(PredictTest, predicunprunetest)
+print("testing error: confusion matrix for unpruned tree")
+print(tableK1)
+testunprunerate = (sum(tableK1)-sum(diag(tableK1)))/sum(tableK1)
+testunprunerate
+
+tableK2 = table(PredictTest, predictprunetest)
+print("testing error: confusion matrix for pruned tree")
+print(tableK2)
+testprunerate = (sum(tableK2)-sum(diag(tableK2)))/sum(tableK2)
+testprunerate
+```
+0.1703704 < 0.2037037, so the training error rate of unpruned tree is higher than pruned tree.
+(2 points) Conclusion may differ if a different initial seed was used.
+
+\newpage
+
+
+2.  ISLR, chapter 8, problem 4.   
+
+Sketch the tree (part a), and the partition of the predictor space (part b), by hand.
+
+(10 points, 5 for part a, 5 for part b)
+
+You can draw your tree by hand on paper, take a picture and embed it in your Rmd with the image tag
+
+<img src="">
+
+
+
+

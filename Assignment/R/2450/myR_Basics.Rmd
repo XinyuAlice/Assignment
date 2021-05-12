@@ -1,0 +1,935 @@
+---
+title: "R Programming Basics"
+authors: "P Fullsack / B. Smith / C. Liu"
+output:
+  html_document: 
+    toc: true
+  pdf_document: null
+  pdf_presentation: null
+  slidy_presentation:
+    css: slidy.css
+    widescreen: yes
+  word_document: null
+---
+
+## Outline
+
+- R basics
+- Data Structures
+- Flow Control
+- Functions
+- R for statistics
+
+
+# R basics
+
+## Using R as a calculator
+
+Open the Console window in Rstudio, or invoke R in stand alone mode
+
+You will see the prompt sign >
+Enter a numerical expression on the line, and R will evaluate it
+and return the result, with a label, on the next line.
+A variety of mathematical and logical operators and functions are
+available. Commonly used operators are +,-,*,/,^ (exponentiation),
+= (assignment), <- (another assignment operator), -> (yet another
+assignment operator).  Common builtin functions are log (log base e),
+log10 (log base 10), exp (exponential function), sqrt.  Common constants
+used in mathematical expressions are $\pi$ and $e$.  Here are some
+examples:
+
+```{r}
+1+2
+2*3
+2^3
+log(10)
+log10(10)
+exp(1)
+
+```
+Typically we want to assign values to variables, and then work on the
+variables.  For example, suppose that $x$ denotes temperature in
+degrees Celsius.  By definition, the temperature in degrees Farenheit is
+$32+(5/9) x$.  Suppose that $x=20$.  The following assigns 20 to $x$,
+then calculates $32+(5/9)x$. There are 3 expressions.  The first has
+an error.  The third assigns the Farenheit temperature to $y$, then 
+prints $y$.
+
+```{r}
+x=20
+#32+(5/9)x
+32+(5/9)*x
+y=32+(5/9)*x
+y
+
+```
+
+As with all computer programs, there is a precedence to evaluation
+of operators.  The precedence rules for R are listed at
+
+http://stat.ethz.ch/R-manual/R-devel/library/base/html/Syntax.html
+
+It's worthwhile to remember that exponential has precedence over
+unary $+/-$, has precedence over multiplication/division, has precedence over addition/subtraction, has precedence over logical operations such as and/or/!,    has precedence over the assignment operations <-, =, ->.
+
+If two operators have equal precedence, then evaluation is from
+left to right.
+
+Most importantly, brackets can be used to override operator predence, and are highly recommended if you are in doubt.
+
+
+Examples:
+```{r}
+1+3*2  #multiplication is evaluated before addition.
+(1+3)*2 #the expression inside brackets is evaluated before multiplication
+12/3/2  #divisions have same precedence, so evaluation is left to right
+12/(3/2) #expression is brackets is evaluated first.
+-3^2  #exponention has precedence over unary minus
+(-3)^2 
+```
+
+For a slightly more complicated example, suppose that we want
+to evaluate the standard normal density function
+
+$$\phi(x)=\frac{e^{-.5 x^2}}{\sqrt{2 \pi}}$$ when $x=2$.
+
+```{r}
+x=2
+phix=exp(-.5*x^2)/sqrt(2*pi)
+phix
+```
+
+Just to check the result, evaluate the builtin function "dnorm", which
+returns the value of the normal density function.
+
+```{r}
+dnorm(2)
+```
+
+
+##  Different methods of assigning values to variables.
+
+- "<-" (recommended by R developers.)
+```{r}
+a <- "character strings are delineated by quote marks"
+print(a)
+```
+
+- "=" also works
+
+```{r}
+c = 10 
+d = 11
+print(c+d)
+```
+
+
+```{r}
+"hi" -> b
+print(b)
+```
+
+## Data types: numeric, logical, character
+
+ - numeric data
+
+```{r}
+
+num = 100
+num + 1
+```
+
+Numeric values can be integers, double precision real numbers, or complex
+valued numbers.  We won't deal with complex numbers in this course.
+One can convert integers to double precision, round double precision numbers
+to a specified number of decimal points, truncate (throw away the decimal
+part of real numbers).  Here are a few examples.
+
+```{r}
+a=1
+is.integer(a) #is a an integer
+is.double(a) #is a a double precision real number
+b=1.237
+b1=round(b,1); b  #note  multiple commands can be entered on same line using ;
+bt=trunc(b)
+is.integer(bt)
+bi=as.integer(trunc(b)); bi;  is.integer(bi)
+bi2=as.integer(b); c(b,bi2) #I've concatenated b and bi2
+
+```
+
+As is typical with computer programs, if a numeric expression includes
+different modes, then all variables/values in the expression will be
+converted to the highest mode prior to evaluation.  For example,
+when adding an integer to a double precision, the result will be double
+precision.
+
+```{r}
+a=1.234; is.double(a)
+b=as.integer(3)
+s=a+b
+is.double(s)
+```
+  - character data
+
+```{r}
+
+chr = "abc"; chr
+chr2 = "123"; print(chr2)
+cat(chr,chr2)
+```
+
+
+  - logical data
+    + TRUE or T represents 1
+    + FALSE or F represents 0
+
+```{r}
+
+l1 <- TRUE
+l1
+
+l2 <- 0 < 1 #will be TRUE if 0 < 1
+l2
+
+1<0
+0<1
+
+1+TRUE  
+
+```
+
+Note from the above expression, that TRUE will evaluate to 1 in
+a numerical expression (and False will evaluate to 0).
+
+  - factor data
+
+Factors are categorical data.  The only thing relevant for a factor
+variable is that values are different from one another,but  not what the
+actual values are. 
+
+```{r}
+lv = c("good","bad" , "bad", "good") #elements of lv are character data
+lv
+lvf = factor(lv, levels = c("bad","good")) #lvf is now a factor variable
+#the only thing relevant for lvf is that it has two different values,
+#the acutal values are meaningless for factors
+lvf
+```
+
+  - make an ordered factor
+
+An ordered factor is a bit different.  In this case "bad", which
+comes first in the "levels" statement, is considered to be less than
+good. Seems a bit strange at first, but can be useful in some contexts.
+
+```{r}
+lvf2 = factor(lv, order=T, levels = c("bad","good"))
+lvf2
+```
+
+# Data Structures
+
+----------
+
+- Vector
+- Matrix
+- Data Frame
+- List
+- Array
+
+
+
+## vectors
+
+A vector has one dimension.  All elements in a vector need to be same data type
+
+
+
+
+  - creating a vector of successive numbers from 2 through 9
+```{r}
+a = 2:9  
+length(a)
+is.integer(a)
+```
+
+
+  - creating a vector using the "seq" command
+```{r}
+sq = seq(0, 100, by=10)
+print(sq)
+seq(0.1, 2, by=0.3)
+```
+
+
+ -  the "combine" command "c" is used to create vectors
+b = c(1, 3.2, 4.5, 10, 11.6123)
+b
+```
+
+  - create a vector of character strings
+```{r}
+chVec = c("vector","is","a","this")
+chVec
+is.vector(chVec)
+is.character(chVec)
+```
+  -  create a vector of logical values
+```{r}
+logicVec = c(TRUE,TRUE,FALSE,TRUE,FALSE)
+logicVec
+is.logical(logicVec)
+```
+
+### subsetting a vector
+
+```{r}
+chVec[3] # the 3rd element of chVec
+chVec[1:2] # the first 2 elements of chVec
+chVec[c(4,2,3,1)] # rearrange the elements of chVec
+b=-1*c(1:4);b # note how the multiplication works elementwise
+b[2:4]
+b[c(1,3,4)]
+b[-c(1,2)] # drop the first two elements of b
+```
+
+
+
+## matrices
+
+ A matrix is a rectangular array of elements having two dimensions.  All elements of a matrix  must be same data type
+
+
+
+#### Syntax: The "matrix" command is used to create a matrix.
+
+
+#### Examples
+```{r}
+m = matrix(1:12,nrow=4,ncol=3); m 
+#by default, elements are entered columnwise
+is.matrix(m)
+m2=matrix(1:12,byrow=T,ncol=3);m2 #elements are entered rowwise
+m3=matrix(1:12,byrow=T,nrow=4);m3
+```
+
+### subsetting a matrix
+```{r}
+m[3,2] # element at 3rd row, 2nd colum
+m[2,] # the 2nd row
+m[,2:3] # the 2nd,3rd columns
+m[2:4,c(1,3)] #second through 4th rows, columns 1 and 3
+```
+
+### combining matrices using "rbind" or "cbind"
+  
+```{r}  
+rbind(m,m) # joins matrices over rows.  
+#The matrices must have the same number of columns.
+cbind(m,m) # joins matrices over columns.  
+#The matrices must have same number of rows.
+```
+
+### Matrix Calculations:  This material is useful for those of
+### you continuing on to Stat3340
+
+Use "t" to transpose a matrix, "solve" to invert a matrix, "det" to calculate the determinant of a matrix, "*" to multiply two matrices
+elementwise, "%*%" to carry out matrix multiplication.
+
+```{r}
+m = matrix(c(3,2,-2,2,5,2,2,8,4),3,3) # create a square matrix
+m
+t(m) # transpose
+solve(m) # inverse
+det(m)  # determinant
+## * and %*% are different
+m * m
+m %*% m # this is the matrix multiplication !!
+round(m %*% solve(m),4) #verifies that solve(m) gives the inverse of m
+```
+
+
+## Other data structures
+
+### Array
+
+Arrays can have an arbitrary number of dimensions.  A  vector is an array with 1 dimension. A matrix is an array with 2 dimensions.  
+We will NOT be using Arrays other than vectors and matrics in Stat2450.
+
+
+```{r}
+array(1:6) # a vector
+array(1:6,dim=c(2,3)) # a matrix with 2 rows, 3 columns
+array(1:24, dim=c(2,3,4)) # 3 dimensions
+array(1:24, dim=c(2,3,4))[1,,] 
+```
+
+### Lists - not used in Stat2450
+
+The list is the most complex data structure in R. A list gathers
+a variety of objects under one name. The general syntax for a list is 
+
+list(name1 = object1, name2 = object2,...)
+
+#### Example
+```{r}
+testList =  list(n = c(2, 3, 5),
+                char = c("aa", "bb", "cc", "dd", "ee"),
+                bool = c(TRUE, FALSE, TRUE, FALSE),
+                m = matrix(1:9,3,3),
+                alist = list(name=c("a","b"),gender=c("male","female")))
+
+testList
+testList[[5]]
+testList[["m"]]
+testList$char
+```
+
+A factor is a type of list where each list component is a  vector, and each of the vectors is of the same length. Thus the list can be represented as a rectangular data structure.
+
+
+
+## Reading data from files
+
+Two commonly used procedures to read data from an external
+file are *read.csv*, and *scan*.  
+
+*read.csv* reads a comma delimited excel file. (*read.table* is identical to *read.csv* except for the default values of some of the input arguments.)
+
+```{r }
+autoData = read.csv("http://www-bcf.usc.edu/~gareth/ISL/Auto.csv",
+   header=T,quote="")
+
+head(autoData)
+```
+
+*scan* scans a file, row by row, and returns the contents of the file
+as a single vector.  If the file contains only numeric data, this is
+fine.  If it contains a mix of numeric and character data, the result
+is a character vector.  Have a look at 
+http://bsmith.mathstat.dal.ca/stat2450/Data/fish.txt and fishnoheader.txt at the same address.
+
+```{r}
+data1=scan("http://bsmith.mathstat.dal.ca/stat2450/Data/fish.txt",what="character")
+data2=scan("http://bsmith.mathstat.dal.ca/stat2450/Data/fishnoheader.txt")
+data1[1:5]
+data2[1:5]
+fishm=matrix(data2,byrow=T,ncol=3) #need to know the number of columns
+age=fishm[,1]; temperature=fishm[,2]; length=fishm[,3]
+ls()
+```
+## Writing data to a file
+
+### Using *write.table* to save a data frame.
+
+Make a dataframe with the variables Age, Temp and Length, then use
+the *write.table* function to save that data to a file named
+"myfishdata.txt".  Look at the file using a text editor outside
+of rstudio.
+
+```{r}
+myfishdata=data.frame(Age=age,Temp=temperature, Length=length)
+head(myfishdata)
+myfishdata1.txt=write.table(myfishdata,file="myfishdata1.txt")
+```
+
+
+### Using *write* to save a matrix.
+
+The following uses the function *write* to write the matrix *fishm*
+to a file *myfishdata2.txt*.
+
+```{r}
+write(t(fishm),file="fishdata2.txt",ncol=3) #specify number of columns
+```
+
+####For small data sets
+- *fix()* or *edit()*
+```{r eval=F}
+students = data.frame(name=character(),age=numeric(),grade=numeric(),stringsAsFactors = F)
+edit(students)
+
+```
+
+
+
+
+
+
+## getting help
+
+#### help about function 
+
+```{r eval=F}
+help(functionName) or ?functionName  
+```
+
+e.g. help page for fitting linear models function `lm()`
+
+```{r eval=F}
+?lm
+```
+
+
+
+#### searching the help documentation for a given character string
+
+
+```{r eval=F}
+ help.search(string) or ??string
+```
+
+e.g. find the functions that fit linear models
+
+```{r eval=F}
+?? "linear models"
+```
+
+
+
+#### list all functions contain "*name*"
+
+```{r eval=F}
+apropos("str", mode = "function")
+```
+
+
+e.g. list all the functions whose name contains "plot"
+```{r}
+apropos("plot", mode="function")
+```
+
+
+
+#### R code style
+
+https://google.github.io/styleguide/Rguide.xml
+
+
+
+```{r include = F, eval=F}
+for (i in 1:5){
+  varName = paste("v",i,sep="")
+  assign(varName,i)
+}
+
+
+```
+
+
+## The workspace
+
+The workspace is your current R working environment 
+
+#### list the objects in the current workspace
+
+
+```{r}
+ls() ## list all the variables in the workplace
+
+```
+
+#### remove an object from the workspace
+
+```{r eval=F}
+rm(variableName)
+rm(a)
+a
+```
+
+#### clear the workspace (It's a good habit to put it at top of your script)
+
+```{r}
+rm(list=ls()) # clear the environment; 
+```
+
+#### show the current working directory
+
+```{r eval=F}
+getwd()
+```
+
+#### change the working directory
+
+```{r eval=F}
+setwd("newDirectory")
+```
+
+
+## comment
+
+Comment is a readable explanation or annotation in the source code
+
+### One line
+- add "#" before comment 
+
+### Multi lines
+- have to "#" each line
+- Rstudio "Ctrl+Shift+C" / "Command+Shift+C"
+- "if (FALSE)" maybe a helpful trick
+```{r}
+if (F) {
+"
+  ...
+  ...
+      "
+}
+
+```
+
+## Packages
+
+#### R packages are collections of functions and data sets developed by the community. 
+
+### Install package
+
+- install.packages("packageName")
+
+```{r eval = F}
+install.packages("ISLR")
+```
+
+
+- "Packages" pane in Rstudio
+
+### Load package
+
+- *library* / *require* both work
+
+```{r eval=F}
+library("ISLR")
+```
+
+```{r eval=F}
+require("ISLR")
+```
+
+
+
+
+# Import/Export data
+
+## Working Directory
+
+- read or write files to a specific location
+- avoid using full filepath
+
+- get working directory
+```{r eval=F}
+getwd()
+
+```
+- set working directory
+    - *setwd()*
+    - Rstudio: Session -> set working directory
+
+```{r eval=F}
+setwd("~")
+getwd()
+```
+
+
+
+# Control Flow
+
+## Conditional
+
+### *if ... else ...*
+#### Syntax
+```{r eval=F}
+if (condition) {
+   statement1
+} else {
+   statement2
+}
+```
+#### Example
+```{r}
+a <- 0
+if (a < 0) {
+   print("Negative number")
+} else if (a > 0) {
+   print("Positive number")
+} else {
+   print("Zero")
+}
+```
+
+### *ifelse*
+
+#### *ifelse* is a compact version of *if ... else ...*
+#### Syntax
+```{r eval = F}
+
+ifelse(condition, statement1, statement2)
+
+```
+
+#### Example
+
+```{r}
+
+vec = 1:12
+evenOdd = ifelse(vec %% 2 == 0, "even", "odd")
+print(evenOdd)
+
+
+```
+
+
+
+- Logical Operators
+
+
+
+
+-Example
+```{r}
+year = 2018
+if ( (year %% 4 == 0 & year %% 100 != 0) | year %% 400 ==0){
+    print(paste(year,"is a leap year"))
+  } else {
+    print("no")
+  }
+```
+
+
+#### Use logical values to subset data
+
+- Example
+
+```{r}
+
+vec = c(1, 3, 6, 2, 5, 10, 11, 9)
+# return all the values greater than 5
+
+vec[vec > 5]
+
+
+# use "cars" data set, return all the rows where dis less than 20
+cars[cars$dist < 20, ]
+
+# return all the rows where speed is 10
+cars[cars[,1] == 10, ]
+
+```
+
+
+
+
+## Loops
+
+- *for* (most common)
+- *while*
+- *repeat*
+- *break* and *next*
+
+## *for* (most common)
+-Syntax
+```{r eval=F}
+for (var in range) {
+    statement
+}
+```
+
+- Example: Find the leap years
+```{r }
+for (i in 2000:2020){
+  if ( (i %% 4 == 0 & i %% 100 != 0) | i %% 400 ==0){
+    print(paste(i,"is a leap year"))
+  }
+}
+
+```
+
+
+## *while*
+#### Syntax
+```{r eval=F}
+while (condition){
+  statement
+}
+
+```
+
+#### Example
+```{r}
+x = 5
+while(x <= 20){
+  print(x)
+  x = x+5
+}
+
+```
+
+#### Be careful with the infinit loop
+
+## *repeat*
+
+#### Syntax: repeat {statement}
+#### need to use **break**
+```{r}
+x = 5
+repeat{
+  print(x)
+  x = x+5
+  if (x > 20) break
+}
+
+```
+
+
+
+
+
+## "break" and "next"
+#### "break": break the current loop
+```{r}
+for (i in 1:6){
+  if (i==5){
+    break
+  }
+  print(i)
+}
+```
+
+#### "next": skip to next iteration
+```{r}
+for (i in 1:6){
+  if (i==5){
+    next
+  }
+  print(i)
+}
+
+```
+
+
+# Create your Functions
+
+## User-defined function
+-Syntax
+```{r eval}
+TestFunc = function(arg1,arg2,...){
+  statements
+  return(something)
+}
+
+```
+
+-Example
+```{r}
+SumSquare = function(x,y){
+    val = x^2+y^2
+    return(val)
+}
+
+SumSquare(3,4)
+```
+
+## Exercise: create a function for finding leap years
+- input: startYear, endYear
+- output: return a vector of all the leap years between startYear and endYear
+- Use *while* or *repeat* for looping
+
+```{r include=F}
+leapYears = function(startYear,endYear){
+  results = c()
+  year = startYear
+  while (year <= endYear){
+  if ( (year %% 4 == 0 & year %% 100 != 0) | year %% 400 ==0){
+    results = c(results,year)
+  }
+    year = year + 1
+  }
+  return(results)
+}
+
+leapYears(2018,2025)
+
+```
+
+
+
+#Some Useful Functions for Statistics
+
+## Arithmetic
+- Arithmetic Operators
+
+
+- Mathematic Functions
+
+
+
+## Vectorized Arithmetic
+```{r}
+testVect = c(1,3,5,2,9,10,7,8,6)
+
+min(testVect) # minimum
+max(testVect) # maximum
+mean(testVect) # mean
+median(testVect) # median
+quantile(testVect) # quantile
+var(testVect) #variance
+sd(testVect) # standard deviation
+
+vect1 = cars$speed
+vect2 = cars$dist
+
+cov(vect1,vect2) # covariance
+cor(vect1,vect2) # correlation coefficient
+
+
+```
+
+
+##Probability Distributions
+
+- key words
+    - *d* : density (returns the height of the pdf)
+    - *p* : distribution function (returns the cdf)
+    - *q* : quantile function (returns the inverse cdf)
+    - *r* : random generation
+
+- distributions
+    - *binom* : Binomial Distribution
+    - *pois*  : Poisson Distribution
+    - *unif* :  Uniform Distribution
+    - *exp* : Exponential Distribution
+    - *norm* : Normal Distribution
+    - *chisq* : Chi-Squared Distribution
+    - *t*   : t Distribution
+    - *f*  : F Distribution
+
+- Examples
+```{r}
+# bionomial
+dbinom(2, size=10, prob=0.2)
+
+dbinom(0, size=10, prob=0.2) + dbinom(1, size=10, prob=0.2) + dbinom(2, size=10, prob=0.2)
+
+pbinom(2,size=10,prob=0.2)
+
+runif(6,min=1,max=2)
+
+qt(c(.025, .975), df=4)
+
+qf(.95, df1=3, df2=4)
+
+normSamples = rnorm(1000,mean=5,sd = 3)
+hist(normSamples)
+
+```
+
+- *set.seed()* reproduce the results even using random
+```{r}
+set.seed(100)
+rnorm(5)
+rnorm(5)
+
+set.seed(100) # reproduce the results
+rnorm(5)
+rnorm(5)
+```
+

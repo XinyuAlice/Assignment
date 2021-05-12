@@ -1,0 +1,42 @@
+"C:\Program Files\Java\jdk-11\bin\java.exe" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2018.2.4\lib\idea_rt.jar=62801:C:\Program Files\JetBrains\IntelliJ IDEA 2018.2.4\bin" -Dfile.encoding=UTF-8 -classpath C:\Users\csali\IdeaProjects\4171as\out\production\4171as ex1
+Enter the Message M(x):
+1101011
+Enter the value G(x):
+1101
+Codeword: 1101011010
+Enter CRC bits:
+1101011010
+Codeword: 1101011010000
+0
+Data transmitted has no error
+
+Process finished with exit code 0
+
+
+
+"C:\Program Files\Java\jdk-11\bin\java.exe" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2018.2.4\lib\idea_rt.jar=62806:C:\Program Files\JetBrains\IntelliJ IDEA 2018.2.4\bin" -Dfile.encoding=UTF-8 -classpath C:\Users\csali\IdeaProjects\4171as\out\production\4171as ex1
+Enter the Message M(x):
+1101011
+Enter the value G(x):
+1101
+Codeword: 1101011010
+Enter CRC bits:
+1101010110
+Codeword: 1101010110101
+101
+There is an error in received data...
+
+Process finished with exit code 0
+"C:\Program Files\Java\jdk-11\bin\java.exe" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2018.2.4\lib\idea_rt.jar=62812:C:\Program Files\JetBrains\IntelliJ IDEA 2018.2.4\bin" -Dfile.encoding=UTF-8 -classpath C:\Users\csali\IdeaProjects\4171as\out\production\4171as ex1
+Enter the Message M(x):
+10011101
+Enter the value G(x):
+1001
+Codeword: 10011101100
+Enter CRC bits:
+10011101100
+Codeword: 10011101100000
+0
+Data transmitted has no error
+
+Process finished with exit code 0

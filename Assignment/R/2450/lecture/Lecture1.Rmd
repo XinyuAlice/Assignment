@@ -1,0 +1,609 @@
+---
+title: "R Programming Basics"
+author: ''
+output:
+  html_document:
+    toc: yes
+  pdf_document: null
+  pdf_presentation: null
+  slidy_presentation:
+    css: slidy.css
+    widescreen: yes
+  word_document: null
+---
+
+## Outline
+
+- R basics
+- Data Structures
+
+
+# R basics
+
+## Using R as a calculator
+
+Open the Console window in Rstudio, or invoke R in stand alone mode
+
+
+
+You will see the prompt sign >
+Enter a numerical expression on the line, and R will evaluate it
+and return the result, with a label, on the next line.
+A variety of mathematical and logical operators and functions are
+available. Commonly used operators are +,-,*,/,^ (exponentiation),
+= (assignment), <- (another assignment operator), -> (yet another
+assignment operator).  Common builtin functions are log (log base e),
+log10 (log base 10), exp (exponential function), sqrt.  Common constants
+used in mathematical expressions are $\pi$ and $e$.  Here are some
+examples:
+
+```{r}
+1+2
+2*3
+2^3
+log(10)
+log10(10)
+exp(1)
+
+```
+Typically we want to assign values to variables, and then work on the
+variables.  For example, suppose that $x$ denotes temperature in
+degrees Celsius.  By definition, the temperature in degrees Farenheit is
+$32+(5/9) x$.  Suppose that $x=20$.  The following assigns 20 to $x$,
+then calculates $32+(5/9)x$. There are 3 expressions.  The first has
+an error.  The third assigns the Farenheit temperature to $y$, then 
+prints $y$.
+
+```{r}
+x=20
+#32+(5/9)x
+32+(5/9)*x
+y=32+(5/9)*x
+y
+
+```
+
+As with all computer programs, there is a precedence to evaluation
+of operators.  The precedence rules for R are listed at
+
+http://stat.ethz.ch/R-manual/R-devel/library/base/html/Syntax.html
+
+It's worthwhile to remember that exponential has precedence over
+unary $+/-$, has precedence over multiplication/division, has precedence over addition/subtraction, has precedence over logical operations such as and/or/!,    has precedence over the assignment operations <-, =, ->.
+
+If two operators have equal precedence, then evaluation is from
+left to right.
+
+Most importantly, brackets can be used to override operator predence, and are highly recommended if you are in doubt.
+
+
+Examples:
+```{r}
+1+3*2  #multiplication is evaluated before addition.
+(1+3)*2 #the expression inside brackets is evaluated before multiplication
+12/3/2  #divisions have same precedence, so evaluation is left to right
+12/(3/2) #expression is brackets is evaluated first.
+-3^2  #exponention has precedence over unary minus
+(-3)^2 
+```
+
+For a slightly more complicated example, suppose that we want
+to evaluate the standard normal density function
+
+$$\phi(x)=\frac{e^{-.5 x^2}}{\sqrt{2 \pi}}$$ when $x=2$.
+
+```{r}
+x=2
+phix=exp(-.5*x^2)/sqrt(2*pi)
+phix
+```
+
+Just to check the result, evaluate the builtin function "dnorm", which
+returns the value of the normal density function.
+
+```{r}
+dnorm(2)
+```
+
+
+##  Different methods of assigning values to variables.
+
+- "<-" (recommended by R developers.)
+```{r}
+a <- "character strings are delineated by quote marks"
+print(a)
+```
+
+- "=" also works
+
+```{r}
+c = 10 
+d = 11
+print(c+d)
+```
+
+
+```{r}
+"hi" -> b
+print(b)
+```
+
+## Data types: numeric, logical, character
+
+ - numeric data
+
+```{r}
+
+num = 100
+num + 1
+```
+
+Numeric values can be integers, double precision real numbers, or complex
+valued numbers.  We won't deal with complex numbers in this course.
+One can convert integers to double precision, round double precision numbers
+to a specified number of decimal points, truncate (throw away the decimal
+part of real numbers).  Here are a few examples.
+
+```{r}
+a=1
+is.integer(a) #is a an integer
+is.double(a) #is a a double precision real number
+b=1.237
+b1=round(b,1); b  #note  multiple commands can be entered on same line using ;
+bt=trunc(b)
+is.integer(bt)
+bi=as.integer(trunc(b)); bi;  is.integer(bi)
+bi2=as.integer(b); c(b,bi2) #I've concatenated b and bi2
+
+```
+
+As is typical with computer languages, if a numeric expression includes
+different modes, then all variables/values in the expression will be
+converted to the highest mode prior to evaluation.  For example,
+when adding an integer to a double precision, the result will be double
+precision.
+
+```{r}
+a=1.234; is.double(a)
+b=as.integer(3)
+s=a+b
+is.double(s)
+```
+  - character data
+
+```{r}
+
+chr = "abc"; chr
+chr2 = "123"; print(chr2)
+cat(chr,chr2)
+```
+  - logical data
+    + TRUE or T represents 1
+    + FALSE or F represents 0
+
+```{r}
+
+l1 <- TRUE
+l1
+
+l2 <- 0 < 1 #will be TRUE if 0 < 1
+l2
+
+1<0
+0<1
+
+1+TRUE  
+
+```
+
+Note from the above expression, that TRUE will evaluate to 1 in
+a numerical expression (and False will evaluate to 0).
+
+  - factor data
+
+Factors are categorical data.  The only thing relevant for a factor
+variable is that values are different from one another,but  not what the
+actual values are. 
+
+```{r}
+lv = c("good","bad" , "bad", "good") #elements of lv are character data
+lv
+lvf = factor(lv, levels = c("bad","good")) #lvf is now a factor variable
+#the only thing relevant for lvf is that it has two different values,
+#the acutal values are meaningless for factors
+lvf
+```
+
+  - make an ordered factor
+
+An ordered factor is a bit different.  In this case "bad", which
+comes first in the "levels" statement, is considered to be less than
+good. Seems a bit strange at first, but can be useful in some contexts.
+
+```{r}
+lvf2 = factor(lv, order=T, levels = c("bad","good"))
+lvf2
+```
+
+# Data Structures
+
+----------
+
+- Vector
+- Matrix
+- Data Frame
+- List
+- Array
+
+
+## vectors
+
+A vector has one dimension.  All elements in a vector need to be same data type
+
+  - creating a vector of successive numbers from 2 through 9
+```{r}
+a = 2:9  
+length(a)
+is.integer(a)
+```
+
+  - creating a vector using the "seq" command
+```{r}
+sq = seq(0, 100, by=10)
+print(sq)
+seq(0.1, 2, by=0.3)
+```
+
+-  the "combine" command "c" is used to create vectors
+b = c(1, 3.2, 4.5, 10, 11.6123)
+b
+```
+
+  - create a vector of character strings
+```{r}
+chVec = c("vector","is","a","this")
+chVec
+is.vector(chVec)
+is.character(chVec)
+```
+  -  create a vector of logical values
+```{r}
+logicVec = c(TRUE,TRUE,FALSE,TRUE,FALSE)
+logicVec
+is.logical(logicVec)
+```
+
+### indexing/subsetting a vector
+
+```{r}
+chVec[3] # the 3rd element of chVec
+chVec[1:2] # the first 2 elements of chVec
+chVec[c(4,2,3,1)] # rearrange the elements of chVec
+b=-1*c(1:4);b # note how the multiplication works elementwise
+b[2:4]
+b[c(1,3,4)]
+b[-c(1,2)] # drop the first two elements of b
+```
+
+## matrices
+
+ A matrix is a rectangular array of elements having two dimensions.
+ All elements of a matrix  must be same data type.
+
+
+#### Examples
+```{r}
+m = matrix(1:12,nrow=4,ncol=3); m 
+#by default, elements are entered columnwise
+is.matrix(m)
+m2=matrix(1:12,byrow=T,ncol=3);m2 #elements are entered rowwise
+m3=matrix(1:12,byrow=T,nrow=4);m3
+```
+
+### indexing/subsetting a matrix
+```{r}
+m[3,2] # element at 3rd row, 2nd colum
+m[2,] # the 2nd row
+m[,2:3] # the 2nd,3rd columns
+m[2:4,c(1,3)] #second through 4th rows, columns 1 and 3
+```
+### combining matrices using "rbind" or "cbind"
+  
+```{r}  
+rbind(m,m) # joins matrices over rows.  
+#The matrices must have the same number of columns.
+cbind(m,m) # joins matrices over columns.  
+#The matrices must have same number of rows.
+```
+
+** Matrix Calculations:**  The transpose operation "t"  exchanges
+matrix rows and columns.  It is useful when writing a matrix to
+a file outside of R, as will be seen later.  "solve" finds the inverse
+of a matrix, and the determinant is found using "det".
+"*" multiplies two matrices elementwise, and "%*%" carries out matrix
+multiplication.
+
+```{r}
+m = matrix(c(3,2,-2,2,5,2,2,8,4),3,3) # create a square matrix
+m
+t(m) # transpose
+solve(m) # inverse
+det(m)  # determinant
+## * and %*% are different
+m * m
+m %*% m # this is the matrix multiplication !!
+round(m %*% solve(m),4) #verifies that solve(m) gives the inverse of m
+```
+
+### *Data frames*
+
+Like a matrix, a data frame is a rectangular data structure, consisting
+of a number of columns of equal length.  Unlike a matrix, the data in the columns may be of different types.
+
+More precisely, a data frame is a particular type of list (see below)
+in which all list components are vectors, and each of the vectors is
+of the same length.
+
+```{r}
+# Example: make a small data frame
+rm(list=ls()) #remove all objects to clean up the work space
+ls()
+subjectno=c(1:8)
+#enter some data for first and last name, age
+firstname=c("Dick","Jane","","Jian","jing","Li","John","Li")
+lastname=c("Tracy","Doe","Smith","Yuan","Xian","Li","Doe","")
+age=sample(c(18:35),8) #assign random ages from 18 through 35
+data=data.frame(subject=subjectno,firstname=firstname,
+      surname=lastname,age=age) #make the data frame
+rm("subjectno","firstname","lastname","age")
+ls()
+data
+summary(data)
+2*data
+```
+
+
+
+
+
+
+## Other data structures
+
+** Array:** Arrays can have an arbitrary number of dimensions.  A
+vector is an array with 1 dimension. A matrix is an array with 2 dimensions.  
+We will NOT be using Arrays other than vectors and matrices in Stat2450.
+
+
+```{r}
+array(1:6) # a vector
+array(1:6,dim=c(2,3)) # a matrix with 2 rows, 3 columns
+array(1:24, dim=c(2,3,4)) # 3 dimensions
+array(1:24, dim=c(2,3,4))[1,,] 
+```
+
+** Lists:**  The list is the most complex data structure in R. A list gathers
+a variety of objects under one name. The general syntax for a list is 
+
+list(name1 = object1, name2 = object2,...)
+
+
+
+Other than data frames, we will not be using lists in Stat2450.
+
+```{r}
+testList =  list(n = c(2, 3, 5),
+                char = c("aa", "bb", "cc", "dd", "ee"),
+                bool = c(TRUE, FALSE, TRUE, FALSE),
+                m = matrix(1:9,3,3),
+                alist = list(name=c("a","b"),gender=c("male","female")))
+
+testList
+testList[[5]]
+testList[["m"]]
+testList$char
+```
+
+# Importing and Exporting data from outside of R
+
+
+## Two commonly used procedures to read data from an external
+file are *read.csv*, and *scan*.  
+
+**read.csv** reads a comma delimited excel file. (**read.table** is identical
+to *read.csv* except for the default values of some of the input arguments.)
+
+```{r }
+autoData = read.csv("http://www-bcf.usc.edu/~gareth/ISL/Auto.csv",
+   header=T,quote="")
+head(autoData)
+```
+
+**scan** scans a file, row by row, and returns the contents of the file
+as a single vector.  If the file contains only numeric data, this gives
+a numeric vector.
+If the file contains a mix of numeric and character data, the result
+is a character vector.  Have a look at 
+http://bsmith.mathstat.dal.ca/stat2450/Data/fish.txt and fishnoheader.txt
+at the same address, in a web browser, or in an editor, in order to
+see what the file contents actually look like.
+
+```{r}
+data1=scan("http://bsmith.mathstat.dal.ca/stat2450/Data/fish.txt",what="character")
+data2=scan("http://bsmith.mathstat.dal.ca/stat2450/Data/fishnoheader.txt")
+data1[1:5]
+data2[1:5]
+fishm=matrix(data2,byrow=T,ncol=3) #need to know the number of columns
+age=fishm[,1]; temperature=fishm[,2]; length=fishm[,3]
+ls()
+```
+
+## Use **write.table** to save a data frame.
+
+The following example makes a dataframe with the variables
+Age, Temp and Length, then uses *write.table* to save that data to
+a file named "myfishdata.txt".  Look at the file using a text editor outside
+of R and Rstudio to see what the contents of the file actually look like.
+
+```{r}
+myfishdata=data.frame(Age=age,Temp=temperature, Length=length)
+head(myfishdata)
+myfishdata1.txt=write.table(myfishdata,file="myfishdata1.txt")
+```
+
+
+## **write** can be used to save a matrix.
+
+The following example writes the content of the matrix *fishm*
+to a file *myfishdata2.txt*.  Note that the matrix must be
+transposed prior to writing.  (You can look at the file outside of R/Rstudio
+to see what the file really looks like, and see what happens if you
+don't transpose the matrix prior to writing it to a file.)
+
+```{r}
+write(t(fishm),file="fishdata2.txt",ncol=3) #specify number of columns
+```
+
+###  You can enter or edit small data sets withing R using the
+ **fix()** or **edit()** commands inside those environments.  This may be
+ more convenient that entering the data to a file outside of R and then
+ inputting with *scan* or *read.csv*.
+
+```{r eval=F}
+students = data.frame(name=character(),age=numeric(),grade=numeric(),
+stringsAsFactors = F)
+edit(students)
+
+```
+
+# getting help in R
+
+If you're using Rstudio, explore the **help** pane of the lower right window.
+
+Use **help.start** to start up the help system in a graphical interface.
+
+Use the **help** function to get info on a particular function.
+
+```{r eval=F}
+help(functionName) or ?functionName  
+```
+
+e.g. help page for fitting linear models function `lm()`
+
+```{r eval=F}
+?lm
+```
+
+Use **help.search** to get help documentation for a given character string.
+
+```{r eval=F}
+ help.search(string) or ??string
+```
+
+e.g. find the functions that fit linear models
+
+```{r eval=F}
+?? "linear models"
+```
+
+Use **apropos** to list all functions that contain a particular
+character string.
+
+```{r eval=F}
+apropos("str", mode = "function")
+```
+e.g. list all the functions whose name contains "plot"
+```{r}
+apropos("plot", mode="function")
+```
+
+If you are using RStudio, the *Console* window has command completion.
+This is very useful, and can help you overwriting the names of built in
+functions and commands.
+
+# The workspace
+
+The workspace is your current R working environment.  Use **ls** to
+list the objects in the current workspace, 
+
+```{r}
+ls() ## list all the variables in the workplace
+
+```
+
+If you're using RStudio, the objects in the workspace are included in
+the *Environment* tab of the upper right window.
+
+Use **rm** to remove one or more objects from the workspace
+
+```{r eval=F}
+rm(variableName)
+rm(a)
+a
+```
+
+To completely clear the workspace, 
+
+```{r}
+rm(list=ls()) # clear the environment;
+```
+(It's a good habit to put this at top of your script)
+
+
+# Working Directory
+
+When reading or writing files to a specific location, it is convenient 
+not to have to use the absolue pathname.
+
+Use **getwd** to show the current working directory:
+
+```{r eval=F}
+getwd()
+```
+
+Use **setwd** to change the working directory:
+
+```{r eval=F}
+setwd("newDirectory")
+```
+
+In RStudio, *setwd* can be accessed from the *Session* menu.
+
+```{r eval=T}
+setwd("~")
+getwd()
+```
+
+
+# Comments
+
+A comment is a readable explanation or annotation in the source code.  Good
+programming practice calls for extensive use of comments in complicated
+programs, so that you can understand what your code is doing at a later date.
+
+For a one line comment, add a "#" before the comment material, as has
+been done in many of the examples above.
+
+
+# Packages
+
+## R packages are collections of functions and data sets developed by the R community. 
+
+Use **install.packages("packageName")** to install the named package.
+
+```{r eval = F}
+install.packages("ISLR")
+```
+If you are using Rstudio, this is accessed through the *Tools* dropdown
+menu.
+
+## Load package
+
+To load a package in an R session, use **library**  or *require*.
+
+```{r eval=F}
+library("ISLR")
+```
+
+
+
+

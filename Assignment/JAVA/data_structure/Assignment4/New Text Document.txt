@@ -1,0 +1,38 @@
+ String heapresult="";
+String cpuresult="";
+while (!heap.isEmpty()|| !list1.isEmpty()) {
+            System.out.println("Time Unit:" + time);//time unit
+             while(!list1.isEmpty()&&list1.get(0).getTimeArrival()==time){
+               heap.add(list1.remove(0));
+            }
+            heapresult+=String.format("%-50s",heap);//heap
+            cpuresult+=String.format("%-51s"," ");
+            //then process
+            list2.add(heap.deleteMax());
+            heapresult+=String.format("%-35s",heap);
+            cpuresult+=String.format("%-35s",list2);
+
+            if (list2.get(0).getTimeReqd() > 1) {//require time>1
+                list2.get(0).setTimeReqd(list2.get(0).getTimeReqd() - 1);
+
+            }
+            else if (list2.get(0).getTimeReqd() ==0){
+                list2.clear();
+            }
+            if(!list2.isEmpty()){
+                heap.add(list2.remove(0));
+            }
+            heapresult += heap;
+            System.out.print(heapresult);//end
+            System.out.println();
+            System.out.println(cpuresult);
+
+            time++;
+            heapresult="Heap: ";
+            cpuresult="CPU: ";
+            if(time>7){
+                break;
+            }
+
+
+        }

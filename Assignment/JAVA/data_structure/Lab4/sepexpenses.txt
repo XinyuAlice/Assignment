@@ -1,0 +1,37 @@
+Sep 21, 2018
+Lunch
+4.51
+Sep 21, 2018
+Gas
+25.00
+Sep 21, 2018
+Movies
+36.36
+Sep 21, 2018
+Groceries
+22.55
+Sep 24, 2018
+Groceries
+72.58
+Sep 24, 2018
+Breakfast
+11.48
+Sep 24, 2018
+Tennis
+15.00
+Sep 24, 2018
+Hair Salon
+34.50
+Sep 25, 2018
+CreditCard
+245.00
+Sep 27, 2018
+CarRental
+360.01
+Sep 27, 2018
+Pizza
+11.50
+Sep 28, 2018
+Gas
+81.13
+

@@ -1,0 +1,488 @@
+---
+title: "Let's get ready for the Midterm!"
+author: ''
+output:
+  pdf_document
+---
+
+# Midterm:
+
+Event Details:
+
+<ul>
+<li>Date: Monday Feb. 10  2020
+<li>Time: 6:00 PM - 8:00 PM
+
+<li>Location: D420 is McCain auditorium 1
+<br>This is the room to the left when you enter
+Mccain Building from University Avenue.
+</ul>
+
+Allowed material: Calculator + Cheat sheet
+
+Cheat sheet: 1 page recto+verso
+
+
+# Arithmetic and boolean operations
+
+You must know the symbols used for basic operations in R
+
+You must be able to execute code mentally (in your head) 
+
+You can use a calculator to help you evaluate some expressions
+
+##Arithmetic operations
+
+Please revise the meaning of arithmetic operations in R
+
+Understand the priority of operators and order of evaluation of expressions without parenthesis in R:
+
+```{r}
+7/8/9/10
+-6^2
+-2^1/2
+```
+
+
+##Boolean operations
+
+Understand the meaning of logical (boolean) operators.
+
+
+```{r}
+# to assign the boolean value TRUE to a boolean variable x, you write
+x=T
+# same idea for the boolean value FALSE
+y=F
+t=T
+z=F
+u=T
+w=T
+q=F
+m=T
+# this calculates x OR y
+x | y
+# this calculates y AND z
+y & z
+# because AND has priority over OR
+# when there is no parenthesis, the expression
+x&y|z
+# is evaluated like this
+(x&y)|z
+# which means that you first calculate x&y , store it in r, then calculate r | z
+# when you have blocks of consecutive &, such blocks are F except if all variables in the block are T
+# what is the value of
+x&y&t&u
+
+# opposite for or. for a block of or, the block is T except if all variables in the block are F
+q|m|y|t
+# can you MENTALLY (in your head) predict the value of the following expression, then run R
+# and check if you are right?
+x|y&z|t&u&w|q|m
+```
+
+# Vectors and matrices
+
+You  must know how to:
+<ul>
+<li>create vectors, matrices and arrays
+<li>access their values
+<li>modify their values
+</ul>
+
+```{r}
+
+v <- c(3,6,8,2,9,1)
+
+n=length(v)
+n
+
+#accessing vectors
+
+#value of c and access
+
+i=0
+i=2
+c(v[i],v[i+1],v[i+2])
+
+# storing results in vectors
+# certain operations or functions return not a single value but a vector or list of values
+
+# what does the function sort return if we apply it to a vector/list?
+
+ sort(v)
+ 
+ w <- c('c','a','d','b')
+ sort(w)
+
+
+```
+
+
+EXERCISE-MATINIT
+
+You must know how to define a matrix and assign numerical values to it, either via the matrix function, or via a for loop
+
+
+```{r}
+
+W=matrix(1:16,byrow=T,ncol=4)
+W
+
+```
+
+
+
+```{r}
+# you must understand all these examples of initialization of a matrix
+A=matrix(1:15,byrow=T,ncol=3)
+A
+B=matrix(1:15,byrow=T,nrow=3)
+B
+# to fill a matrix by columns you do not use bycol, but you specify byrow=F
+C=matrix(1:15,byrow=F,nrow=3) # shoot  not bycol=T
+C
+D=matrix(1:15,byrow=F,ncol=3)
+D
+# use this as a generic way to define a zero matrix with given number of rows and columns
+E=matrix(0,nrow=3,ncol=5)
+E
+
+```
+
+
+```{r}
+M=matrix(0,nrow=5,ncol=3)
+# to retrieve the number of rows and columns of a matrix M
+n = nrow(M)
+m = ncol(M)
+c(n,m)
+
+
+```
+
+Please see the loop section if you do not understand loops
+
+
+Here I use loops to 'scan' all column and row indexes and assign a value to the generic matrix element $M(i,j)$.
+
+Can you run the following code on the paper?
+
+
+```{r}
+M=matrix(0,nrow=5,ncol=3)
+# to retrieve the number of rows and columns of a matrix M
+n = nrow(M)
+m = ncol(M)
+x <- c(2,4,6,8,10)
+y <- c(10,20,30)
+
+# initialize the vector x of angles
+# x <-c(...)
+# initialize the vector y of functions
+
+for (i in (1:n)){
+for (j in (1:m)){
+#  M[i,j] = myfct(x[i],y[j])
+  M[i,j] = x[i]* y[j]
+}
+}
+M
+
+```
+
+Let us explore a variant of this exercise
+
+for example , suppose I want to calculate the sine, the cosine and the tangent of 5 angles,
+(say : 10,15,20,45,60 degrees)
+How would you tabulate these values using the receipe I just suggested?
+
+
+As the base trigonometric function (sin, cos, tan) expect angles expressed in radians (there are $\pi$ radians in $180$ degrees),you may want to fisrt code a function that transforms degrees to radians:
+
+```{r}
+
+degrees.to.radians<-function(degrees=45,minutes=30)
+{
+if(!is.numeric(minutes)) stop("Please enter a numeric value for minutes!\n")
+if(!is.numeric(degrees)) stop("Please enter a numeric value for degrees!\n")
+  
+  
+#print(degrees)  
+  
+  
+decimal<-minutes/60
+c.num<-degrees+decimal
+radians<-c.num*pi/180
+radians
+}
+
+# lets check this on 45 degrees. what should this return?
+tan(degrees.to.radians(45.,0))
+
+# yes R has already a function to do this
+tanpi(45)
+
+```
+
+
+Now let us capitalize on this function, and write a new function that will calculate the values for
+any matrix element (row-column numbers)
+
+
+```{r}
+myfct = function(x,y){
+  
+radangle = degrees.to.radians(x,0);
+if(y == 1){
+  s = sin(radangle);
+  return(s)
+}
+if(y == 2){
+  c = cos(radangle);
+  return(c)
+}  
+if(y == 3){
+  t = tan(radangle);
+  return(t)
+}  
+
+}
+
+```
+
+
+
+```{r}
+mytrigotable = function(M,x,y){
+n=nrow(M)
+m=ncol(M)
+for (i in (1:n)){
+  for (j in (1:m)){
+    # print(c(x[i],y[j]))
+    M[i,j] = myfct(x[i],y[j])
+  }
+}
+return(M)
+}
+
+```
+
+
+```{r}
+x =   c(10,30,45,60,80)
+y =   c(1,2,3)
+M=matrix(0,byrow=T,ncol=3,nrow=5)
+
+mytrigotable(M,x,y)
+
+```
+
+
+EXERCICE-SAME
+
+we frequently use assignments instructions in which the same variable is used on the left and the right hand side
+
+You must understand that in such an assignment of the form $x = f(x)$, the variable $x$ on the right has an 'old' value that is frozen during the calculation, $x=f(x_{old})$, and after evaluating $f$, the result of the operation overwrites $x$.
+
+We will see later an example where  $x$ is modified in this way at each iteration within a loop.
+
+
+```{r}
+
+x=c(T,T,F,T,F) # initial value 
+x
+x[3 ] = x[2] | x[5]  # modification of the form $x=f(x)$
+x                    # print the result: new value of x
+x[3 ] = x[1] & x[4]
+x
+x[3 ] = x[3] | x[2]
+x
+x[3 ] = x[1] & x[5]
+x
+```
+
+
+
+# Conditional instructions
+
+
+Understand how the ifelse command works on vectors
+
+Basically : 
+
+ifelse(CONDITION,RESULTIFTRUE,RESULTIFFALSE)
+
+in
+returns a vector that is 'composite'. This vector takes the value of the vector 
+at those places where CONDITION evaluates to 
+
+or else
+
+
+Understand how to run R code mentally or on the paper
+
+understand what is returned by a function upon calling it with knpwn arguments values
+exemple
+
+
+
+```{r}
+x=c(T,T,F,T,F)
+rT = c(1,2,3,4,5)
+rF = c('a','b','c','d','e')
+ifelse(x,rT,rF)
+```
+
+
+EXERCICE-INYOURHEAD
+
+Can you run the following code 'in your head', and guess what z will be?
+
+After guessing the value of z, rerun this code with z printed out
+
+```{r}
+x=   c(5,2,7,8,9,4,31)
+rT = x%%3 < 2
+rF = c('hello','this','is','a','nice','exercise','!')
+z <- ifelse(x%%3 < 2,rT,rF)
+#z
+```
+
+
+# Loops
+
+
+You must be able to run/execute a small loop in your head or with pen and paper
+
+Exercice: follow how a vector $x$ is modified a loop:
+
+
+Can you run this code in your head and predict the output?
+
+```{r}
+
+x=c(T,T,F,T,F)
+
+for (i in 1:5){
+  if(i > 1 & i < 5){
+     x[i ] = x[i-1] & x[i+1] & x[i]
+     
+     print(x)
+  }
+}
+
+
+
+```
+
+
+Can you run this code in your head and predict the output?
+
+```{r}
+
+x=c(T,T,F,T,F)
+
+for (i in 1:5){
+  if(i > 1 & i < 5){
+     x[i ] = x[i-1] & x[i+1] & x[i]
+     
+     print(x)
+  } 
+  else if(i < 5){
+     x[i] = !x[i] | !x[i+1]
+  }
+}
+
+
+
+```
+
+# Functions
+
+You must understand how to define your own functions, and how to call a function.
+
+You must understand how to see which values are returned by a function
+
+
+```{r}
+# if you see this in the function, it means that the function returns the values
+# of the variables x y  and t, provided this statement is executed
+# return(x,y,t)
+```
+
+
+You must be able to run a simple function 'on the paper or in your head', given values of the arguments.
+
+Exercice: runfunctioninhead
+
+Can you predict on the paper what will be printed?
+
+```{r}
+  fme=function(x){
+    n=length(x)
+    for (i in (1:(n-1))){
+        # suppose that 
+        x[i] = x[i+1]+x[i]
+}
+   return(x)
+}
+
+
+x=c(7,2,-1,4,-5,8)
+# this will print the result returned by the function for the specified value of the argument x
+
+fme(x)
+```
+
+
+You must understand that functions can return more than a single value
+
+For example, the function sort applied to a vector returns a vector
+
+Can you guess the output of this code:
+
+
+```{r}
+x  =c(7,2,-1,4,-5,8)
+z = sort(x) # z is returned by the function sort. what is z?
+# guess the value of z
+```
+
+Can you guess the output of this code (run in your head)
+
+
+```{r}
+x=c(7,2,-1,4,-5,8)
+i=2
+x[i:(i+1)] = c(x[i+1],x[i])
+# can you guess what will be printed here
+print(x)
+```
+
+
+When you try to predict the output of a loop, please just execute the loop by freezing the values of the index and do the necessary calculations in the body of the loop.
+
+Please do this exercise: run the following loop on the paper, then check that your result is right by running R.
+
+
+```{r}
+     W=matrix(1:16,byrow=T,ncol=4)
+print(W)
+
+fmat=function(W){
+n=nrow(W)
+    
+      for (i in 1:n){
+      for (j in 1:n){
+        W[j,i]=W[i,j]+W[j,i]
+      }
+      }
+    
+      return(W)
+}
+
+print(fmat(W))
+```
+
+

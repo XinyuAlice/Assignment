@@ -1,0 +1,139 @@
+---
+title: 'STAT 2450 Assignment 1 '
+author: "Alice Liu"
+date: 'Banner:  B00783546'
+output:
+ pdf_document: default
+---
+=================================================================================================================
+
+
+1.  there are approximately 8 kilometres in 5 miles.  There are approximately 4.55 litres in one imperial gallon.
+    An automobile uses 9.5 litres of gasoline while traveling 100 kilometers.  What is the mileage in miles per gallon?
+
+```{r}
+Nk=100 # number of kilometres travelled
+Lg=9.5 # number of litres of gasoline used
+Nm=100*5/8 #number of miles travelled
+Gg= Lg/4.55 #number of gallons used. currently set to missing. replace with appropriate formula.
+MPG=Nm/Gg #replace with appropriate formula
+MPG # (2 points)
+```
+
+2.  The probability that an exponential random variable $T$ with mean $\theta$ is greater than $t_0$ is given by
+
+ $$P(T>t_0) = e^{-t_0/\theta}$$
+
+
+   Calculate the probability that an exponential random variable with mean 10 is greater than 20.
+
+```{r}
+theta=10
+t0=20
+prob=exp(-t0/theta) #enter the appropriate formula here
+prob # (2 points)
+```
+
+3.  The probability density function of a $\chi^2$ random variable with $k$ degrees of freedom, evaluated at
+the point $x$, is given by
+$$f(x) = \frac{x^{k/2-1} e^{-x/2} }{2^{(k/2)} ((k/2)-1)!}$$
+
+where $(k-1)!$ is "k-1 factorial", which in R is given by "factorial(k-1)"
+
+Use R to calculate the probability density function of a $\chi^2$ random variable with 6 degrees of freedom, evaluated
+at the point $x=4$.
+
+```{r}
+x=4
+k=6
+#write the R expression for $f(x)$ here, using 
+#the "factorial" and "exp" functions, and other arithmetic operations
+fx=x^(k/2-1) *exp(-x/2)/(2^(k/2)*factorial(k/2-1))
+fx  # (5 points)
+```
+
+Note:  you can check your result using the builtin R function "dchisq", using the syntax "dchisq(4,6)".
+
+
+4.  The file https://mathstat.dal.ca/~fullsack/DATA/A14.txt contains a
+sequence of 12 numbers.
+
+    + Read the numbers into a vector using the "scan" command. Print the vector.
+    + Arrange the 12 numbers into a matrix with 3 rows and 4 columns, where the first 4 numbers in the vector are in the first row, the next 4 numbers in the second row, and so on.  Use the matrix command, with the "byrow=T" argument. Print the matrix.
+    +  Arrange the 12 numbers into a 4 by 3 matrix, where the first 3 numbers in the vector are in the first row, the next 3 numbers in the second row.  Print the matrix.
+    + Calculate, and print,  the matrix product of the the first and second matrices, using the matrix multiplication operator "%*%. 
+    + Use the "det" command to calculate and print the determinant of the product matrix
+    + Use the "dim" command to get the dimensions of the product matrix. 
+    +  extract the second row of the product matrix into a vector V2, and print
+
+```{r}
+V=scan("https://mathstat.dal.ca/~fullsack/DATA/A14.txt")
+#Show V
+
+#Show M1
+M1=matrix(V,byrow=T,nrow=3)
+M1
+#Show M2
+M2= matrix(V,byrow=T,ncol=3)
+M2
+#Show Mprod
+Mprod = M1%*%M2
+Mprod
+#det to calculate
+det(Mprod) #calculate the determinant (10 points)
+Mdim= dim(Mprod)
+Mdim # (1 point)
+#print V2
+V2= Mprod[2,] 
+V2#(2 points)
+```
+
+5. The file 
+
+	http://faculty.marshall.usc.edu/gareth-james/ISL/Auto.csv
+
+    contains data on an outcome variable "mpg", which is automobile mileage
+in miles per gallon, and a number of other variables which
+can be used to predict mileage.
+
+    + Use the **read.csv** command to read the data into a data frame.
+The syntax for this is in the notes "myR_Basics1".  
+    + Use the summary
+command to get summary statistics for all of the variables in the data
+set.  For example, if you read the data into a dataframe named
+"mydata", then you would type summary(mydata) to get the
+    + Make boxplots of the mileage values for the different numbers of
+cylinders. Make sure to add appropriate labels to the X and Y axes,
+and add a title to the plot. The syntax for the boxplot command is in
+the Rintro notes.  In order to do this, you need to either attach the
+created data frame prior to using the plot command, or include the
+"data=mydata" option on the boxplot command 
+    + Make a scatterplot with miles per gallon on
+the Y axis and displacement on the X axis. Once again, make sure to
+label the axes and add a title.  If you have "attached" the data
+frame, you won't need the "data=mydata" syntax on the command line.
+Otherwise, you will.
+
+```{r}
+mydata=read.csv("http://faculty.marshall.usc.edu/gareth-james/ISL/Auto.csv")
+summary(mydata) # (3 points)
+```
+
+```{r}
+# (5 points)
+boxplot(mpg~cylinders, data=mydata,xlab="number of cylinders",
+ylab="miles per gallon",
+main="Mileage vs number of cylinders")
+```
+
+
+```{r}
+# (5 points)
+plot(mpg~displacement, data=mydata,xlab="displacement (cu. in.)",
+ylab="miles per gallon",main="mileage vs engine displacement")
+```
+
+The displacement values are in cubic inches, where 1 cubic inch equals
+`6.4516` cubic centimetres, so a 400 cubic inch engine had a displacement of `6554.826`.  The mileage was correspondingly dismal.  You could refer back to question 1 to see what 10 mpg, pretty common back in the day, corresponds to in litres per 100 kilometres.
+Conservation of resources wasn't high on the typical consumer's prioity list. 
+

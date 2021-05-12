@@ -1,0 +1,776 @@
+---
+title: "R Programming Basics - Flow control"
+output:
+  html_document:
+    toc: yes
+  pdf_document: null
+  pdf_presentation: null
+  slidy_presentation:
+    css: slidy.css
+    widescreen: yes
+  word_document: null
+---
+
+
+## Outline
+
+- Conditional instructions
+- Logical Functions and Operators
+- Loops
+
+# TOPIC 1: Conditional instructions
+
+
+```{r eval=T}
+#s = sqrt(x)
+```
+
+
+```{r eval=T}
+x=5
+s = NA
+if(x >= 0){
+     # enclose this block of code by {}
+    s = sqrt(x) # will not be executed if x <0
+}
+s
+```
+
+
+IF 
+
+```{r eval=T}
+nclasses=5
+fulltime=FALSE
+if (nclasses >= 3){
+  # the exection of the following instruction
+  # is conditional on the condition above
+  fulltime=TRUE 
+}
+fulltime
+```
+
+
+IF-ELSE
+
+```{r eval=T}
+fulltime=NA
+nclasses=1
+if (nclasses >= 3) {
+    fulltime=TRUE # will not be executed
+} else {
+    fulltime=FALSE
+}
+fulltime
+```
+
+
+IF - ELSE IF - ELSE
+
+```{r eval=T}
+
+grade=78 # score 0 to 100
+           
+Lgrade=NA  # Letter-based score  A+ A B+ B B-
+
+
+if (grade >=90) {
+                 Lgrade="A+"
+                 print("Good job!")
+} else if (grade >= 85) {
+                 Lgrade="A"
+} else if (grade >= 80) {
+                 Lgrade="A-"
+} else if (grade >= 77) {
+                 Lgrade="B+"
+} else if (grade >= 73) {
+                 Lgrade="B"
+} else if (grade >= 70) {
+                 Lgrade="B-"
+} else if (grade >= 65) {
+                 Lgrade="C+"
+} else if (grade >= 60) {
+                 Lgrade="C"
+} else if (grade >= 55) {
+	             Lgrade="C-"
+} else if (grade >= 50) {
+	             Lgrade="D"
+} else                  {
+	             Lgrade="F"; print("Too bad!")
+}
+Lgrade
+
+```
+
+
+Exercice: print a message saying if a number is located
+to the left of the interval [-1,3], 
+or within this interval,
+or to the right of this interval
+
+```{r eval=T}
+a=rnorm(1) # this will generate a random number that you do not know
+
+
+
+```
+
+
+IFELSE
+
+output = ifelse(inputcondition, calculation1-if-true, calculation2-if-false)
+
+
+```{r}
+a=1:5
+vout=ifelse(a<4,-a,10*a ) 
+print(cbind(a,a<4,vout))
+
+```
+
+
+
+
+```{r}
+
+#find the component by component minimum of vectors a and b
+a=rnorm(10); 
+b=rnorm(10); 
+vecminab=ifelse(a<b,a,b); 
+print(cbind(a,b,vecminab))
+
+
+```
+
+Exercice: determine if the elements of a vector are evenly divisible by 2
+
+```{r}
+#determine if the elements of  vector vec are evenly divisible by 2
+vec = 1:12
+
+
+```
+
+Exercise: what does the following code do?
+
+```{r}
+ifelse(a > 0, sqrt(a), sqrt(-a))
+```
+
+
+# TOPIC 2: Logical Functions and Operators
+
+
+& (and), | (or), == (equals), ! (not)
+
+
+```{r}
+#?"=="
+?"!"
+```
+
+Logical functions 
+
+
+$$  d = f(r,w,f)   $$
+
+
+Truth tables
+
+
+```{r echo=F}
+x=c(T,T,F,F)
+y=c(T,F,T,F)
+M=cbind(x,y,x&y,x | y, !x)
+M
+```
+
+
+```{r echo=F}
+dimnames(M)[[2]]=c("x","y","x&y","x|y","!x")
+M
+```
+
+
+```{r echo=F}
+#?dimnames
+M
+```
+
+a theorem is a statement that is always true
+
+law of De Morgan  $!(a&b)  == !a | !b $
+
+
+
+```{r echo=F}
+a=c(T,T,F,F)
+b=c(T,F,T,F)
+M=cbind(a,b,!(a&b) == (!a) | (!b))
+M
+```
+
+
+
+
+calculate x or y and z
+
+can you calculate      x or y and z   ?
+
+( x or y)  and z
+x or ( y and z) 
+
+
+
+```{r echo=F}
+x=c(T,T,T,T,F,F,F,F)
+y=c(T,T,F,F,T,T,F,F)
+z=c(T,F,T,F,T,F,T,F)
+```
+
+
+```{r}
+x=c(rep(T,4),rep(F,4))
+y=rep(c(rep(T,2),rep(F,2)),2)
+z=rep(c(T,F),4)
+cbind(x,y,z,(x|y)&z,x|y&z,x|(y&z))
+```
+
+Exercise: is it always true that 'x and (y or z) = (x and y) or (x and z)' ?
+
+
+about theorems
+
+is this 
+'x and (y or z) = (x and y) or (x and z)'
+
+a theorem ? ( is it always true regardless of the values of x y z)
+
+```{r echo=F}
+x=c(T,T,T,T,F,F,F,F)
+y=c(T,T,F,F,T,T,F,F)
+z=c(T,F,T,F,T,F,T,F)
+
+```
+
+Exercise: can you build in R the following logical circuit?
+
+<img src="https://adamwsonu.files.wordpress.com/2010/03/quizcircuit.png">
+
+
+```{r}
+a=c(rep(T,4),rep(F,4))
+b=rep(c(rep(T,2),rep(F,2)),2)
+c=rep(c(T,F),4)
+# y = ?
+```
+
+
+
+Use logical functions and expressions to subset data
+
+VERY IMPORTANT (and simple!)
+
+
+Using logical values/expressions to subset data
+
+```{r}
+vec = c(1, 3, 6, 2, 5, 10, 11, 9)
+
+#return all values which are evenly divisible by 3
+vec[vec%%3 == 0]  # vec[ logical condition ]
+
+#return all values which are not evenly divisible by 3
+vec[!vec%%3 == 0]
+vec[!(vec%%3 == 0)]  #better to use brackets if you're unsure of operator precedence
+
+# return all the values in vec which are greater than 5
+vec[vec > 5]
+
+# use "cars" data set, return all the rows where dist is less than 20
+cars[cars$dist < 20, ]  # cars[2,3]
+
+# SUBSETTING ROWS !
+
+# return all the rows where speed is 10
+       cars[cars[,1] == 10, ]
+       
+       names(cars)
+```
+
+
+Example of use of logical operators: is a specified year a leap year? (Uses &, |, and !)
+
+```{r}
+year = 2018
+
+if ( (year %% 4 == 0 & year %% 100 != 0) | year %% 400 ==0){
+    print(paste(year,"is a leap year"))
+  } else {
+    print("no it is not a leap year")
+  }
+
+
+
+
+```
+
+```{r}
+
+# good practice to segment your conditions
+  year=2018
+  x=year %% 4 == 0
+  y=year  %% 100 != 0
+  z=year %% 400 ==0
+  condition=x&y|z
+  c(x,y,z,condition)
+  if(condition) print(paste(year,"is a leap year"))
+```
+
+
+
+
+
+
+Example: use logical expressions to find records in a database
+```{r}
+# preparation of data
+rm(list=ls()) #remove all objects
+ls()
+
+# create a data frame
+
+subjectno=c(1:8)
+
+#enter some data for first and last name, age
+
+firstname=c("Dick","Jane","","Jian","jing","Li","John","Li")
+
+lastname=c("Tracy","Doe","Smith","Yuan","Xian","Li","Doe","")
+
+age=sample(c(18:35),8) #assign random ages from 18 through 35
+
+# creation of a data frame called data
+
+data   =data.frame(subject=subjectno,firstname=firstname,
+                   surname=lastname,age=age)
+
+
+rm("subjectno","firstname","lastname","age")
+ls()
+
+
+attach(data) # attach the dataframe data
+data
+```
+
+
+```{r}
+
+#find subjects whose surname is "Li"
+
+subset1=data[surname=="Li",];
+subset1
+
+
+
+#Is there a Jane Doe in the database?
+
+# here we are using SEVERAL COLUMNS to build the subset
+
+subset2=data[surname=="Doe"&firstname=="Jane",];
+subset2
+
+
+
+# normally missing data in R is coded as NA
+
+#find subjects whose given or surname is missing ("")
+subset3=data[surname=="" | firstname=="",];
+subset3
+
+
+
+
+
+#Find the subjects who are older than 29 years?
+data[age>29,]
+
+
+#find all subjects whose first name starts with "J"
+#use substr(chvector,1,1) to extract the first character
+#of each element of the character vector chvector
+subset4=data[substr(firstname,1,1)=="J",];
+subset4
+
+
+
+#find all subjects whose first name starts with either "J" or "j"
+subset5=data[substr(firstname,1,1)=="J"|substr(firstname,1,1)=="j",];subset5
+
+
+
+
+detach(data) #detach the dataframe data
+```
+
+
+
+
+
+
+
+
+
+
+# Loops (Topic 3)
+
+FOR loop syntax
+
+
+```{r eval=F}
+#for (var in range) {
+  
+  # body of the loop
+  # as many lines of codes AS YOU want 
+  #  statements
+  
+  
+#}
+
+
+```
+
+Calculate the product of the first 10 integers.   1+2+3+  100 ?
+
+```{r}
+# product of the numbers 1:k
+k=10
+
+# create a variable to hold my result 
+#mysum=0  #  initialize the sum to 0
+myprod = 1                    #      1 x 1
+                              #      1 x 1 x 2
+                              #      (1 x 1 x 2) x 3
+for (i in 1:k) {
+  myprod = myprod * i
+}
+
+
+print(myprod)
+myprod1= factorial(k)
+
+c(myprod,myprod1)
+
+```
+
+
+More general sums: $S_n = f(0)+f(1)+f(2)+f(3)+\ldots +f(n)$.
+
+
+$$0^3 + 1^3 + 2^3 + \ldots + 1000^3$$.
+
+
+Find items with specific properties in a collection or set
+
+
+```{r }
+for (i in 2000:2020){
+  if ( (i %% 4 == 0 & i %% 100 != 0) | i %% 400 ==0){
+        print(paste(i,"is a leap year"))
+  }
+}
+
+```
+
+
+```{r}
+for (i in 2000:2020){
+  x=i %% 4 == 0
+  y=i %% 100 != 0
+  z=i %% 400 ==0
+  condition=x&y|z
+  print(c(x,y,z,condition))
+    if(condition) print(paste(i,"is a leap year"))
+
+}
+```
+
+
+
+
+For loops are very important in computational linear algebra
+
+
+
+Example: calculation of inner products and matrix products
+
+Inner product      two vectors   ---> u.v
+
+
+$$\sum_{i=1}^n u_i v_i$$
+
+
+```{r}
+u  =  1:10
+v  = -10:-1
+u*v
+
+cbind(u,v,u*v)
+
+prod=0
+
+for (i in 1:10)prod=prod+u[i]*v[i]  #note no {} needed if everying on same line
+
+
+
+print(prod)
+
+#verify
+sum(u*v)
+```
+
+
+
+Matrix product
+
+<img src="https://ai2-s2-public.s3.amazonaws.com/figures/2017-08-08/d5eba6eda6c2f09fd796d0f46a6cf76030bfadcc/5-Figure2-1.png">
+
+<img src="https://shelovesmath.com/wp-content/uploads/2018/06/Dimensions-for-Multiplying-Matrices.png">
+
+<img  src="../EXERCISES/LOOPS/matprod.png">
+
+
+```{r}
+
+
+# if U is a matrix with 3 rows and 2 columns
+#    V                  2          5
+
+# consistency of dimensions is needed for matrix product
+# n X p    p x k  
+
+#  U %*% V       U * V[i,j] = U[i,j] * V[i,j]
+
+U=matrix(1:12,byrow=T,ncol=3)
+U # a 4 by 3 matrix
+
+
+
+V=matrix(c(rep(1,3),c(-1,0,1),-3:-1),byrow=T,ncol=3)
+V # a 3 by 3 matrix
+
+
+
+
+U2=U[2,] #second row of U
+V3=V[,3] #third column of V
+
+# inner product of U2 and V3
+P23=0
+for (k in 1:3) P23=P23+U2[k]*V3[k]
+P23  
+```
+
+
+```{r eval=F}
+
+
+# loop over all rows of P (the matrix P = U %*% V )
+   # loop over all columns
+
+ for (i in 1:4){
+   #for each i in (1,2,3,4), do something
+  for (j in 1:3){
+    #for each j in (1,2,3) do something
+     #calculate Pij here
+  } # end of j for loop
+    } # end of i for loop
+```
+
+This can be calculated in R using three "nested" for loops.
+
+```{r}
+#result will be a 4 by 3 matrix, having 12 elements
+
+P=matrix(rep(0,12),byrow=T,ncol=3) #initialize product with 0's
+
+
+
+for (i in 1:4){ #for each i, execute code until the closing }
+  for (j in 1:3){ #for each j, execute code until the closing }
+        
+        # calculates the inner product of U[i,]  by V[,j]   
+        for (k in 1:3){ # for each k, execute code until the closing }
+               P[i,j]=P[i,j]+U[i,k]*V[k,j]
+        }
+  }
+}
+P
+
+#verify using the builtin R matrix multiplication operator "%*%".
+U%*%V
+
+```
+
+A WORD OF WARNING regarding loops in R.
+
+
+```{r}
+
+
+set=c("this","cat","that","mouse","male","female")
+
+
+for (var in set) {
+   print(var)
+}
+```
+
+
+
+OTHER LOOP CONSTRUCT: WHILE LOOP
+
+
+
+```{r}
+x = 5
+# WHILE LOOPS ARE DANGEROUS because you can loop forever
+#
+
+while(x <= 20){
+  x = x + 5
+  print(x)
+}
+print("i am out")
+```
+
+
+
+
+
+$$e = 1 + \frac{1}{2} + \frac{1}{6} + \frac{1}{24} + \ldots = \sum_{i=0}^{\infty} \frac{1}{i!}$$
+  
+
+```{r}
+e=exp(1) # the e number was discovered by Euler
+
+n=0 # number of terms used
+
+err = 10
+
+while(err > 0.000000001){
+#      # keep n+1 terms
+      eapp <- sum(1/factorial(0:n))
+      err = abs(eapp-e)
+      n=n+1
+}
+
+
+n
+c(eapp,e)
+
+```
+
+
+```{r}
+
+# this is a safety mechanism to avoid looping forever
+
+icond=1
+kmax=1000
+
+k=0
+
+
+while(icond == 1){
+     # your code
+	 
+     # extra code to prevent freezing
+	 k=k+1 # protection
+	 if(k > kmax){icond = 0}
+}
+
+
+
+print('i am out')
+
+```
+
+
+```{r}
+x = 5
+repeat{   # requires no condition and no index
+          # danger of looping forever
+  
+  print(x)
+  x = x+5
+  if (x > 20) break   # break exits the loop
+  
+  
+}
+print('i am out of repeat')
+
+```
+
+
+```{r}
+for (i in 1:6){
+  
+  
+  
+  if (i==5){       # we will skip the value i= 5
+    next
+  }
+  
+  
+  if (i==3){       # we will skip the value i= 5
+    next
+  }  
+  
+  
+  print(i)  # will not be executed when next statement has been executed before
+  
+  
+  
+  
+}
+
+```
+
+
+
+
+# Logical circuit atlas
+
+
+AND Gate:
+
+<a href=""><img src="https://www.electronics-notes.com/images/circuit-symbol-logic-and-01.svg"></a>
+
+
+NAND Gate:
+
+<a href=""><img src="https://www.electronics-notes.com/images/circuit-symbol-logic-nand-01.svg"></a>
+
+
+OR Gate:
+
+<a href=""><img src="https://www.electronics-notes.com/images/circuit-symbol-logic-or-01.svg"></a>
+
+
+NOR Gate:
+
+<a href=""><img src="https://www.electronics-notes.com/images/circuit-symbol-logic-nor-01.svg"></a>
+
+
+X-OR Gate:
+
+<a href=""><img src="https://www.electronics-notes.com/images/circuit-symbol-logic-exor-01.svg"></a>
+
+
+X-NOR Gate:
+
+<a href=""><img src="https://www.electronics-notes.com/images/circuit-symbol-logic-exnor-01.svg"></a>
+
+
