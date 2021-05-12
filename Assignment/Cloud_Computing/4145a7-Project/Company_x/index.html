@@ -1,0 +1,269 @@
+
+<!--Reference: 
+    Using the CSS from website https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css 
+    https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.css
+    Using jquery and javascript library from website: 
+    https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js
+    https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
+    https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js
+    https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.js
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.css">
+    <link rel="stylesheet" href="./stylesheets/index.css">
+</head>
+<body>
+<div class="wrap">
+    <table id="table"></table>
+    <!-- Vertically centered scrollable modal -->
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#staticBackdrop"
+            style="margin-top: 10px; width: 80px">
+        Add
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade " id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+         role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Add jobs</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addDataSourceForm">
+                        <div class="form-group">
+                            <label for="job_name">Job Name</label>
+                            <input type="text" class="form-control" id="job_name" name="job_name">
+                        </div>
+                        <div class="form-group">
+                            <label class="my-1 mr-2" for="part_id">Part Id</label>
+                            <select class="custom-select my-1 mr-sm-2" id="part_id" name="part_id">
+                                <option selected>Choose...</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="qty">QTY</label>
+                            <input type="text" class="form-control" id="qty" name="qty">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="addJobs()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade " id="modifyBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+         role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modifyBackdropLabel">Modify Jobs</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="modifyDataSourceForm">
+                        <div class="form-group">
+                            <label for="modify-job_name">Job Name</label>
+                            <input type="text" class="form-control" id="modify-job_name" name="job_name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="modify-part_id">Part Id</label>
+                            <input type="text" class="form-control" id="modify-part_id" name="part_id" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="modify-qty">QTY</label>
+                            <input type="text" class="form-control" id="modify-qty" name="qty">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="modifyJobs()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.js"></script>
+<script>
+    let jobs
+    $.ajax({
+        url: "https://aa2mxhfqhg.execute-api.us-east-1.amazonaws.com/dvvv/job", success: function (result) {
+            $('#table').bootstrapTable({
+                data: result.Items,
+                "headers": {
+                    "accept": "application/json",
+                    "Access-Control-Allow-Origin":"*"
+                },
+                search: true,
+                columns: [{
+                    checkbox: true
+                }, {
+                    field: 'job_name',
+                    title: 'JobName'
+                }, {
+                    field: 'part_id',
+                    title: 'PartId'
+                }, {
+                    field: 'qty',
+                    title: 'qty'
+                }, {
+                    field: 'operate',
+                    title: 'operate',
+                    width: '200px',
+                    events : operateEvents,
+                    formatter: operateFormatter
+                },]
+            })
+        }
+    });
+
+    window.operateEvents = {
+        'click .modify' : function(e, value, row, index) {
+            console.log(row.job_name)
+
+            $('#modify-job_name').attr("value",row.job_name)
+            $('#modify-part_id').attr("value",row.part_id)
+            $('#modify-qty').attr("value",row.qty)
+        },
+        'click .delete' : function(e, value, row, index) {
+            let data = {
+                part_id: row.part_id,
+                job_name: row.job_name,
+                qty: row.qty,
+            }
+            console.log("data",data)
+            $.ajax({
+                url:'https://aa2mxhfqhg.execute-api.us-east-1.amazonaws.com/dvvv/job',
+                data: {},
+                type: 'DELETE',
+
+                success:function(result){
+                    //Request success
+                    console.log(result)
+                },
+                error:function(err){
+                    //request fail
+                    console.log(err)
+                }
+            })
+            setTimeout(alert("Hello!"), 500);
+            location.reload();
+        }
+    }
+    function operateFormatter(value, row, index) {
+        const data = row
+        console.log(index)
+        return [
+            '<button type="button" class="modify btn btn-primary" data-toggle="modal" data-target="#modifyBackdrop" style="margin-right: 20px">Modify</button>' +
+            '<button id="btn_detail" type="button" class="delete btn btn-danger" >Delete</button>',
+        ].join('');
+    }
+
+    function addJobs() {
+
+        let data = {};
+        let value = $('#addDataSourceForm').serializeArray();
+        $.each(value, function (index, item) {
+            data[item.name] = item.value;
+        });
+        let json = JSON.stringify(data);
+        var part_id = data['part_id'];
+        var job_name = data['job_name'];
+        var qty = data['qty'];
+        console.log(data);  
+        $.ajax({
+            url:'https://aa2mxhfqhg.execute-api.us-east-1.amazonaws.com/dvvv/job?job_name='+job_name +'&part_id='+part_id+'&qty='+qty,
+            data: {},
+            type: 'POST',
+
+            success:function(result){
+                //request successfully
+                console.log(result)
+            },
+            error:function(err){
+                //request failed
+                console.log(err)
+            }
+        })
+        location.reload();
+    }
+
+    function modifyJobs() {
+        let data = {};
+        let value = $('#modifyDataSourceForm').serializeArray();
+        $.each(value, function (index, item) {
+            data[item.name] = item.value;
+        });
+        //let json = JSON.stringify(data);
+        var part_id = data['part_id'];
+        var job_name = data['job_name'];
+        var qty = data['qty'];
+        console.log(data)
+        $.ajax({
+            url:'https://aa2mxhfqhg.execute-api.us-east-1.amazonaws.com/dvvv/job?job_name='+job_name +'&part_id='+part_id+'&qty='+qty,
+            data: {},
+            type: 'put',
+
+            success:function(result){
+                //request successfully
+                console.log(result)
+            },
+            error:function(err){
+                //request failed
+                console.log(err)
+            }
+        })
+        location.reload();
+    }
+    
+
+    $(document).ready(function(){
+        $.ajax({
+            url:'https://q0cyp6koi3.execute-api.us-east-1.amazonaws.com/Dev/allparts',    
+            type: 'get',
+
+            success:function(result){
+                let str = '<option value="">--Please Select--</option>';
+                for (let i = 0; i < result.Items.length; i++) {
+                    str += '<option value=' + result.Items[i].part_id + '>' + result.Items[i].part_id + '</option>';
+                }
+                $("#part_id").html(str);
+                console.log(result)
+            },
+            error:function(err){
+                //request failed
+                console.log(err)
+            }
+        })
+    });
+    
+</script>
+</body>
+</html>

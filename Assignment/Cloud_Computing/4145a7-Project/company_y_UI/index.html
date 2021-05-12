@@ -1,0 +1,212 @@
+<!--Reference: 
+    Front-end framework: https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css
+    https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.css
+    Libraries for ajax and jquery
+    https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js
+    https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
+    https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js
+    https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.js"
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.css">
+    <link rel="stylesheet" href="./stylesheets/index.css">
+</head>
+<body>
+    <div class="wrap">
+        <table id="table"></table>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#staticBackdrop"
+            style="margin-top: 10px; width: 80px">Add
+        </button>
+        <div class="modal fade " id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+            role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Add parts</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addDataSourceForm">
+                            <div class="form-group">
+                                <label for="part_name">Parts name</label>
+                                <input type="text" class="form-control" id="part_name" name="part_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="qoh">QOH</label>
+                                <input type="text" class="form-control" id="qoh" name="qoh">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="addJobs()">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade " id="modifyBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+            role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modifyBackdropLabel">Modify Parts</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="modifyDataSourceForm">
+                            <div class="form-group">
+                                <label for="modify-part_id">Parts id</label>
+                                <input type="text" class="form-control" id="modify-part_id" name="part_id" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="modify-part_name">Parts name</label>
+                                <input type="text" class="form-control" id="modify-part_name" name="part_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="modify-qoh">QOH</label>
+                                <input type="text" class="form-control" id="modify-qoh" name="qoh" readonly>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="modifyJobs()">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.js"></script>
+    <script>
+        $.ajax({
+            url: "https://q0cyp6koi3.execute-api.us-east-1.amazonaws.com/Dev/allparts", success: function (result) {
+                $('#table').bootstrapTable({
+                    data: result.Items,
+                    search: true,
+                    columns: [{
+                        field: 'part_id',
+                        title: 'PartId'
+                    }, {
+                        field: 'part_name',
+                        title: 'PartName'
+                    }, {
+                        field: 'qoh',
+                        title: 'QOH'
+                    }, {
+                        field: 'operate',
+                        title: 'Operation',
+                        width: '200px',
+                        events: operateEvents,
+                        formatter: operateFormatter
+                    },]
+                })
+            }
+        });
+
+        window.operateEvents = {
+            'click .modify': function (e, value, row, index) {
+
+                $('#modify-part_name').attr("value", row.part_name)
+                $('#modify-part_id').attr("value", row.part_id)
+                $('#modify-qoh').attr("value", row.qoh)
+            },
+            'click .delete': function (e, value, row, index) {               
+                var part_id = row.part_id
+                $.ajax({
+                    url: 'https://q0cyp6koi3.execute-api.us-east-1.amazonaws.com/Dev/parts?part_id='+part_id,
+                    data: {},
+                    type: 'DELETE',
+                    success: function (result) {
+                        console.log(result)
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                })
+                setTimeout(function(){window.location.reload();},500);
+            }
+        }
+
+        function operateFormatter(value, row, index) {
+            const data = row
+            console.log(index)
+            return [
+                '<button type="button" class="modify btn btn-primary" data-toggle="modal" data-target="#modifyBackdrop" style="margin-right: 20px">Modify</button>' +
+                '<button id="btn_detail" type="button" class="delete btn btn-danger" >Delete</button>',
+            ].join('');
+        }
+
+        function addJobs() {
+            let data = {};
+            let value = $('#addDataSourceForm').serializeArray();
+            $.each(value, function (index, item) {
+                data[item.name] = item.value;
+            });
+            var part_id = 1;
+            var part_name = data['part_name'];
+            var qoh = data['qoh'];
+            $.ajax({
+                url: 'https://q0cyp6koi3.execute-api.us-east-1.amazonaws.com/Dev/parts?part_id='+part_id+'&part_name='+part_name+'&qoh='+qoh,
+                data: {},
+                type: 'POST',
+                success: function (result) {
+                    console.log(result)
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+            setTimeout(function(){window.location.reload();},500);
+        }
+
+        function modifyJobs() {
+            let data = {};
+            let value = $('#modifyDataSourceForm').serializeArray();
+            $.each(value, function (index, item) {
+                data[item.name] = item.value;
+            });
+            var part_id = data['part_id'];
+            var part_name = data['part_name'];
+            var qoh = data['qoh'];
+            console.log(part_id)
+            $.ajax({
+                url: 'https://q0cyp6koi3.execute-api.us-east-1.amazonaws.com/Dev/parts?part_id='+part_id+'&part_name='+part_name+'&qoh='+qoh,
+                type: 'PUT',
+                data: {},
+                success: function (result) {
+                    console.log(result)
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+            setTimeout(function(){window.location.reload();},500);
+        }
+
+        function deleteJobs() {
+            var rows = $('#table').bootstrapTable('getSelections');
+            alert(JSON.stringify(rows));
+        }
+    </script>
+</body>
+
+</html>

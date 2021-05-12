@@ -1,0 +1,10 @@
+.wrap {
+    width: 600px;
+    margin: auto;
+}
+
+.btn_detail {
+    display: inline-block;
+    width: 80px;
+    margin: 5px;
+}
